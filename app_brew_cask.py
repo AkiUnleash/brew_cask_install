@@ -4,6 +4,7 @@ import glob
 import subprocess
 import re
 
+# コマンド出力結果を返す関数
 def res_cmd(cmd):
 
     # コマンド結果の出力
@@ -11,6 +12,7 @@ def res_cmd(cmd):
         cmd, stdout=subprocess.PIPE,
         shell=True).communicate()[0]
 
+# brew serch コマンドテキスト発行する
 def brew_search(appName):
 
     # コマンドの内容
@@ -25,6 +27,8 @@ def brew_search(appName):
 
 if __name__ == "__main__":
 
+    result_arr = []
+
     # シェルファイル作成
     with open('./cask.sh', 'w'):pass
 
@@ -36,23 +40,26 @@ if __name__ == "__main__":
     for file in files:
         fname = os.path.basename(file)
         fname = fname[0:len(fname)-4:].lower().replace(' ','-')
-        f.write('brew cask install ' + fname + '\n')
+        result_arr.append([fname, file])
+        # f.write('brew cask install ' + fname + '\n')
 
     # ApplicationsサブフォルダのApp名を取得→シェルに追記
     files = glob.glob("/Applications/**/*.app")
     for file in files:
         fname = os.path.basename(file)
         fname = fname[0:len(fname)-4:].lower().replace(' ','-')
-        f.write('brew cask install ' + fname + '\n')
+        result_arr.append([fname, file])
+        # f.write('brew cask install ' + fname + '\n')
 
     #シェルファイルの追記クローズ
     f.close
+
+    print(result_arr)
 
 
 
 # p_tmp = pathlib.Path('/Applications')
 # files = p_tmp.glob("**/*.app")
-
 
 # files = os.listdir(path)
 # files_app = [f for f in files if f[-4:] == '.app']
