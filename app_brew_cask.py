@@ -24,10 +24,21 @@ def brew_search(appName):
     # 結果の判断
     return result_array
 
-
-if __name__ == "__main__":
+def globFileInfo(directry):
 
     result_arr = []
+
+    # ApplicationsフォルダのApp名を取得→配列化
+    files = glob.glob(directry)
+    for file in files:
+        fname = os.path.basename(file)
+        fname = fname[0:len(fname)-4:].lower().replace(' ','-')
+        result_arr.append([fname, file])
+
+    return result_arr
+
+
+if __name__ == "__main__":
 
     # シェルファイル作成
     with open('./cask.sh', 'w'):pass
@@ -35,28 +46,14 @@ if __name__ == "__main__":
     # シェルファイルの追記
     f = open('./cask.sh', 'a')
 
-    # ApplicationsフォルダのApp名を取得→シェルに追記
-    files = glob.glob("/Applications/*.app")
-    for file in files:
-        fname = os.path.basename(file)
-        fname = fname[0:len(fname)-4:].lower().replace(' ','-')
-        result_arr.append([fname, file])
-        # f.write('brew cask install ' + fname + '\n')
+    # appファイルを検索して配列化
+    result_arr = globFileInfo("/Applications/*.app")
+    result_arr = result_arr + globFileInfo("/Applications/**/*.app")
 
-    # ApplicationsサブフォルダのApp名を取得→シェルに追記
-    files = glob.glob("/Applications/**/*.app")
-    for file in files:
-        fname = os.path.basename(file)
-        fname = fname[0:len(fname)-4:].lower().replace(' ','-')
-        result_arr.append([fname, file])
-        # f.write('brew cask install ' + fname + '\n')
+    # f.write('brew cask install ' + fname + '\n')
 
     #シェルファイルの追記クローズ
     f.close
-
-    print(result_arr)
-
-
 
 # p_tmp = pathlib.Path('/Applications')
 # files = p_tmp.glob("**/*.app")
