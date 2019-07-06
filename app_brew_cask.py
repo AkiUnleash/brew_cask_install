@@ -18,14 +18,13 @@ def brew_search(appName):
     # コマンドの内容
     cmd = ("brew search " + appName)
 
-    # コマンド結果の配列化（空白と改行）
-    result_array = re.split(" |\n", res_cmd(cmd))
-
     # 結果の判断
-    return result_array
+    return 1  if appName in res_cmd(cmd) else 0
 
+# 検索したファイル名を配列にする(result_arr)
 def globFileInfo(directry):
 
+    # 配列宣言
     result_arr = []
 
     # ApplicationsフォルダのApp名を取得→配列化
@@ -33,10 +32,12 @@ def globFileInfo(directry):
     for file in files:
         fname = os.path.basename(file)
         fname = fname[0:len(fname)-4:].lower().replace(' ','-')
+        print(fname)
+        flg = brew_search(fname)
+        print(flg)
         result_arr.append([fname, file])
 
     return result_arr
-
 
 if __name__ == "__main__":
 
@@ -55,20 +56,4 @@ if __name__ == "__main__":
     #シェルファイルの追記クローズ
     f.close
 
-# p_tmp = pathlib.Path('/Applications')
-# files = p_tmp.glob("**/*.app")
-
-# files = os.listdir(path)
-# files_app = [f for f in files if f[-4:] == '.app']
-# print(files_app)
-
-# for f in files_app:
-#     f_name = f[0:len(f)-4].lower().replace(' ','-')
-#     print('brew cask install ' + f_name)
-#     # print('brew search ' + f_name)
-
-# for fd_path, sb_folder, sb_file in os.walk(path):
-#     for files in sb_file:
-#         if files[-4:] == '.app':
-#             print(files)
-
+    print(result_arr)
