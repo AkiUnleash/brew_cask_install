@@ -3,6 +3,7 @@ import os
 import glob
 import subprocess
 import re
+from tqdm import tqdm
 
 # コマンド出力結果を返す関数
 def res_cmd(cmd):
@@ -19,7 +20,7 @@ def brew_search(appName):
     cmd = ("brew search " + appName)
 
     # 結果の判断
-    return 1  if appName in res_cmd(cmd) else 0
+    return 1  if appName in str(res_cmd(cmd)) else 0
 
 # 検索したファイル名を配列にする(result_arr)
 def globFileInfo(directry):
@@ -29,13 +30,16 @@ def globFileInfo(directry):
 
     # ApplicationsフォルダのApp名を取得→配列化
     files = glob.glob(directry)
-    for file in files:
+    for file in tqdm(files):
+        # ファイル名を取得→全小文字／スペースはハイフンに置換
         fname = os.path.basename(file)
         fname = fname[0:len(fname)-4:].lower().replace(' ','-')
-        print(fname)
+
+        # brew search でインストール可能化の確認(可=1/不可=0)
         flg = brew_search(fname)
-        print(flg)
-        result_arr.append([fname, file])
+
+        # 配列に取り込む
+        result_arr.append([fname, file, flg])
 
     return result_arr
 
