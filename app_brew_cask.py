@@ -20,7 +20,7 @@ def brew_search(appName):
     cmd = ("brew search " + appName)
 
     # 結果の判断
-    return 1  if appName in str(res_cmd(cmd)) else 0
+    return 1 if appName in str(res_cmd(cmd)) else 2
 
 # 検索したファイル名を配列にする(result_arr)
 def globFileInfo(directry):
@@ -33,9 +33,9 @@ def globFileInfo(directry):
     for file in tqdm(files):
         # ファイル名を取得→全小文字／スペースはハイフンに置換
         fname = os.path.basename(file)
-        fname = fname[0:len(fname)-4:].lower().replace(' ','-')
+        fname = fname[0:len(fname)-4:].lower().replace(' ', '-')
 
-        # brew search でインストール可能化の確認(可=1/不可=0)
+        # brew search でインストール可能化の確認(可=1/不可=2)
         flg = brew_search(fname)
 
         # 配列に取り込む
@@ -43,21 +43,31 @@ def globFileInfo(directry):
 
     return result_arr
 
+
 if __name__ == "__main__":
 
-    # シェルファイル作成
-    with open('./cask.sh', 'w'):pass
-
-    # シェルファイルの追記
-    f = open('./cask.sh', 'a')
 
     # appファイルを検索して配列化
     result_arr = globFileInfo("/Applications/*.app")
     result_arr = result_arr + globFileInfo("/Applications/**/*.app")
 
-    # f.write('brew cask install ' + fname + '\n')
+    # result_arrのflgでソートする
+    result_arr = sorted(result_arr, key=lambda x: x[2])
 
-    #シェルファイルの追記クローズ
+    # シェルファイル作成
+    with open('./brew_cask_install.sh', 'w'):pass
+
+    # シェルファイルの追記
+    f = open('./cask.sh', 'a')
+
+    # shファイルを出力する
+    for r in tqdm(result_arr):
+        status = 'installable' if r[2] == 1 else 'not installable'
+        f.write('#[' + status + ']' + r[1] + '\n')
+        if r[2] == 1:
+            f.write('brew cask install ' + r[0] + '\n\n')
+        else:
+            f.write('# brew cask install ' + r[0] + '\n\n')
+
+    # シェルファイルの追記クローズ
     f.close
-
-    print(result_arr)
