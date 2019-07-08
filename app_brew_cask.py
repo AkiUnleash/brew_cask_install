@@ -55,10 +55,11 @@ if __name__ == "__main__":
     result_arr = sorted(result_arr, key=lambda x: x[2])
 
     # シェルファイル作成
-    with open('./brew_cask_install.sh', 'w'):pass
+    outputSh = './brew_cask_install.sh' 
+    with open(outputSh, 'w'):pass
 
     # シェルファイルの追記
-    f = open('./cask.sh', 'a')
+    f = open(outputSh, 'a')
 
     # shファイルを出力する
     for r in tqdm(result_arr):
@@ -71,3 +72,6 @@ if __name__ == "__main__":
 
     # シェルファイルの追記クローズ
     f.close
+
+    # パーミッションの変更(実行可にする)
+    os.chmod(outputSh, 0o744)
